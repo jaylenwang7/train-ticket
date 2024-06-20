@@ -8,9 +8,10 @@ build:
     concurrency: 16
     push: true
     useDockerCLI: false
-  # tagPolicy:
-  #   envTemplate:
-  #     template: "{{.IMAGE_NAME}}:latest"
+  tagPolicy:
+    envTemplate:
+      template: "{{.IMAGE_NAME}}:latest"
+  default-repo: jaylenwang
   artifacts:
     - image: ts-admin-basic-info-service
       context: ts-admin-basic-info-service
