@@ -27,13 +27,7 @@ dependencies:
   - name: mysql
     version: "0.0.1"
     repository: "file://../mysql"
-  - name: skywalking-helm
-    version: 4.5.0
-    repository: "oci://registry-1.docker.io/apache"
-    condition: skywalking.enabled
-  - name: postgresql
-    version: 15.1.4
-    repository: "oci://registry-1.docker.io/bitnamicharts"
-    condition: skywalking.enabled
-
-
+  - name: jaeger
+      version: "0.69.0"
+      repository: "https://jaegertracing.github.io/helm-charts"
+      condition: jaeger.enabled
