@@ -160,11 +160,3 @@ services:
   tsWaitOrderService:
     name: ts-wait-order-service
     secretRef: ts-wait-order-service
-
-# New Jaeger configuration
-jaeger:
-  replicas: 1
-  image:
-    repository: jaegertracing/all-in-one
-    tag: latest
-  queryNodePort: 32688

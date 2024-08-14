@@ -27,7 +27,3 @@ dependencies:
   - name: mysql
     version: "0.0.1"
     repository: "file://../mysql"
-  - name: jaeger
-    version: "0.69.0"
-    repository: "https://jaegertracing.github.io/helm-charts"
-    condition: jaeger.enabled
