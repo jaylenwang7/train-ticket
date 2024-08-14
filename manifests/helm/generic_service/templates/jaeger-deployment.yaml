@@ -1,26 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-jaeger
+  name: {{ include "generic_service.fullname" . }}-jaeger
   labels:
+    {{- include "generic_service.labels" . | nindent 4 }}
     app: jaeger
-    app.kubernetes.io/name: jaeger
     app.kubernetes.io/component: all-in-one
-    {{- include "jaeger.labels" . | nindent 4 }}
 spec:
   selector:
     matchLabels:
+      {{- include "generic_service.selectorLabels" . | nindent 6 }}
       app: jaeger
-  replicas: {{ .Values.jaeger.replicas | default 1 }}
+  replicas: {{ .Values.jaeger.replicas }}
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
+        {{- include "generic_service.selectorLabels" . | nindent 8 }}
         app: jaeger
-        app.kubernetes.io/name: jaeger
         app.kubernetes.io/component: all-in-one
-        {{- include "jaeger.selectorLabels" . | nindent 8 }}
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "16686"

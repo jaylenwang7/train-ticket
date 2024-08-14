@@ -163,10 +163,8 @@ services:
 
 # New Jaeger configuration
 jaeger:
-  enabled: true
+  replicas: 1
   image:
     repository: jaegertracing/all-in-one
     tag: latest
-  replicas: 1
-  queryService:
-    nodePort: 32688
+  queryNodePort: 32688
