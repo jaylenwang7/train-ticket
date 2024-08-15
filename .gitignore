@@ -1,3 +1,4 @@
 target
 *.tgz
 set-docker.sh
+.vscode
