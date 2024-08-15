@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -euxo pipefail
+
 # Function to prompt for credentials and write to file
 prompt_and_write_credentials() {
     local env_file="./set-docker.sh"
