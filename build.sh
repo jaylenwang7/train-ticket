@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -euxo pipefail
+set -e
 
 # Function to prompt for credentials and write to file
 prompt_and_write_credentials() {
@@ -31,10 +31,16 @@ if [ -f ./set-docker.sh ]; then
 fi
 
 # Check if required environment variables are set, prompt if not
-if [[ -z "$DOCKER_HUB_USERNAME" || -z "$DOCKER_HUB_PASSWORD" ]]; then
+if [ -z "${DOCKER_HUB_USERNAME:-}" ] || [ -z "${DOCKER_HUB_PASSWORD:-}" ]; then
     echo "Docker Hub credentials not found in environment."
     prompt_and_write_credentials
     source ./set-docker.sh
+fi
+
+# Double-check if variables are set after prompting
+if [ -z "${DOCKER_HUB_USERNAME:-}" ] || [ -z "${DOCKER_HUB_PASSWORD:-}" ]; then
+    echo "Error: DOCKER_HUB_USERNAME and DOCKER_HUB_PASSWORD must be set."
+    exit 1
 fi
 
 # Log in to Docker Hub
