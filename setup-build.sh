@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # Install maven
 apt-get update
 apt-get install -y maven

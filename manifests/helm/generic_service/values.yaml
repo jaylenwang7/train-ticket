@@ -2,6 +2,7 @@ global:
   image:
     repository: jaylenwang
     tag: latest
+    pullPolicy: IfNotPresent
   port: 8080
   mysql:
     host: "mysql"
