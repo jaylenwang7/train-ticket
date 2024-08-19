@@ -79,7 +79,7 @@ spec:
         - name: skywalking-agent
           mountPath: /skywalking-agent
       {{- end}}
-      {{- if eq $root.Values.global.monitoring "opentelemtry"}}
+      {{- if eq $root.Values.global.monitoring "opentelemetry"}}
         volumeMounts:
           - name: otel-agent
             mountPath: /otel-agent
@@ -113,7 +113,7 @@ spec:
           emptyDir: {}
       initContainers:
       - name: init-otel-agent
-        image: {{ $root.Values.opentelemtry.image }}
+        image: {{ $root.Values.opentelemetry.image }}
         command: ['sh', '-c', 'cp /javaagent.jar /otel-agent/otel-agent.jar']
         volumeMounts:
         - name: otel-agent

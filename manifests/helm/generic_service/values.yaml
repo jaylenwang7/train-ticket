@@ -10,13 +10,13 @@ global:
     database: "ts"
     user: "root"
     password: "yourpassword" 
-  monitoring: "skywalking" # or "opentelemtry"
+  monitoring: "skywalking" # or "opentelemetry"
 
 skywalking:
   enabled: true  # 默认不部署SkyWalking
   image: apache/skywalking-java-agent:8.8.0-alpine
 
-opentelemtry:
+opentelemetry:
   enabled: true
   image: otel/autoinstrumentation-java:latest
 
