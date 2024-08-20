@@ -47,38 +47,6 @@ spec:
             value: "--require @opentelemetry/auto-instrumentations-node/register"
       {{- end}}
       {{- if not $svc.lang}} #如果没有设置语言，则默认是 java
-      {{- if eq $root.Values.global.monitoring "skywalking"}}
-        volumeMounts:
-          - name: skywalking-agent
-            mountPath: /skywalking-agent
-        env:
-          - name: NODE_IP
-            valueFrom:
-              fieldRef:
-                fieldPath: status.hostIP
-          - name: SW_AGENT_COLLECTOR_BACKEND_SERVICES
-            value: "{{ $root.Release.Name }}-skywalking-helm-oap:11800"
-          - name: SW_GRPC_LOG_SERVER_HOST
-            value: "{{ $root.Release.Name }}-skywalking-helm-oap"
-          - name: SW_GRPC_LOG_SERVER_PORT
-            value: "11800"
-          - name: SW_AGENT_NAME
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.labels['app']
-          - name: JAVA_TOOL_OPTIONS
-            value: "-javaagent:/skywalking-agent/skywalking-agent.jar"
-      volumes:
-        - name: skywalking-agent
-          emptyDir: {}
-      initContainers:
-      - name: init-skywalking-agent
-        image: {{ $root.Values.skywalking.image }}
-        command: ['sh', '-c', 'cp -r /skywalking/agent/* /skywalking-agent/']
-        volumeMounts:
-        - name: skywalking-agent
-          mountPath: /skywalking-agent
-      {{- end}}
       {{- if eq $root.Values.global.monitoring "opentelemetry"}}
         volumeMounts:
           - name: otel-agent
