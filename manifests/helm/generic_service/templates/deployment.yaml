@@ -31,7 +31,7 @@ spec:
           - name: OTEL_METRICS_EXPORTER
             value: console,otlp
           - name: OTEL_EXPORTER_OTLP_ENDPOINT
-            value: opentelemetry-collector-deployment.monitoring:4317
+            value: opentelemetry-collector-deployment:4317
       {{- end}}
       {{- if eq $svc.lang "javascript"}}
         env:
@@ -40,7 +40,7 @@ spec:
           - name: OTEL_METRICS_EXPORTER
             value: console,otlp
           - name: OTEL_EXPORTER_OTLP_ENDPOINT
-            value: opentelemetry-collector-deployment.monitoring:4317
+            value: opentelemetry-collector-deployment:4317
           - name: OTEL_NODE_RESOURCE_DETECTORS
             value: "env,host,os"
           - name: NODE_OPTIONS
@@ -91,13 +91,13 @@ spec:
           - name: OTEL_RESOURCE_ATTRIBUTES
             value: "service.name={{ $svc.name }}"
           - name: OTEL_EXPORTER_OTLP_ENDPOINT
-            value: "http://opentelemetry-collector-deployment.monitoring:4317"
+            value: "http://opentelemetry-collector-deployment:4317"
           - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
-            value: "http://opentelemetry-collector-deployment.monitoring:4317"
+            value: "http://opentelemetry-collector-deployment:4317"
           - name: OTEL_EXPORTER_OTLP_METRICS_ENDPOINT
-            value: "http://opentelemetry-collector-deployment.monitoring:4317"
+            value: "http://opentelemetry-collector-deployment:4317"
           - name: OTEL_EXPORTER_OTLP_LOGS_ENDPOINT
-            value: "http://opentelemetry-collector-deployment.monitoring:4317"
+            value: "http://opentelemetry-collector-deployment:4317"
           - name: OTEL_EXPORTER_OTLP_PROTOCOL
             value: grpc
           - name: OTEL_METRICS_EXPORTER

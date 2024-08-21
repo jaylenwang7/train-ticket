@@ -19,7 +19,7 @@ config:
     debug:
       verbosity: normal
     otlp:
-      endpoint: "jaeger-collector.monitoring:4317"
+      endpoint: "jaeger-collector:4317"
       tls:
         insecure: true
     clickhouse:
