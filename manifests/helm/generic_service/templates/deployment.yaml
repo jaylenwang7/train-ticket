@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: {{ $svc.name }}
-        image: "{{ $root.Values.global.image.repository }}/{{ $svc.name }}:{{ $root.Values.global.image.tag | default $root.Chart.AppVersion }}"
+        image: "{{ $root.Values.global.image.repository }}/{{ $svc.name }}-jaeger:{{ $root.Values.global.image.tag | default $root.Chart.AppVersion }}"
         {{- with $root.Values.global.image.pullPolicy }}
         imagePullPolicy: {{ . }}{{- end}}
         envFrom:
