@@ -29,7 +29,11 @@ spec:
         - env:
             - name: COLLECTOR_ZIPKIN_HTTP_PORT
               value: "9411"
-          image: jaegertracing/all-in-one
+            # Added OTLP support
+            - name: COLLECTOR_OTLP_ENABLED
+              value: "true"
+          # Update to a more recent image that supports OTLP
+          image: jaegertracing/all-in-one:1.39  # Check for the latest version
           name: jaeger
           ports:
             - containerPort: 5775
@@ -43,6 +47,12 @@ spec:
             - containerPort: 16686
               protocol: TCP
             - containerPort: 9411
+              protocol: TCP
+            # Added OTLP gRPC port
+            - containerPort: 4317
+              protocol: TCP
+            # Added OTLP HTTP port (optional, but recommended)
+            - containerPort: 4318
               protocol: TCP
           readinessProbe:
             httpGet:
@@ -95,6 +105,16 @@ spec:
       port: 9411
       protocol: TCP
       targetPort: 9411
+    # Added OTLP gRPC port
+    - name: otlp-grpc
+      port: 4317
+      protocol: TCP
+      targetPort: 4317
+    # Added OTLP HTTP port (optional, but recommended)
+    - name: otlp-http
+      port: 4318
+      protocol: TCP
+      targetPort: 4318
   selector:
     app.kubernetes.io/name: jaeger
     app.kubernetes.io/component: all-in-one
