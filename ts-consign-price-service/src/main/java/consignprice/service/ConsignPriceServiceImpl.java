@@ -58,22 +58,27 @@ public class ConsignPriceServiceImpl implements ConsignPriceService {
 
     @Override
     public Response createAndModifyPrice(ConsignPrice config, HttpHeaders headers) {
-        ConsignPriceServiceImpl.LOGGER.info("[createAndModifyPrice][Create New Price Config]");
-        //update price
-        ConsignPrice originalConfig;
-        if (repository.findByIndex(0) != null) {
-            originalConfig = repository.findByIndex(0);
+        ConsignPriceServiceImpl.LOGGER.info("[createAndModifyPrice][Create or Modify Price Config]");
+        
+        ConsignPrice existingConfig = repository.findByIndex(0);
+        ConsignPrice updatedConfig;
+
+        if (existingConfig != null) {
+            // Update existing config
+            existingConfig.setInitialPrice(config.getInitialPrice());
+            existingConfig.setInitialWeight(config.getInitialWeight());
+            existingConfig.setWithinPrice(config.getWithinPrice());
+            existingConfig.setBeyondPrice(config.getBeyondPrice());
+            updatedConfig = repository.save(existingConfig);
+            ConsignPriceServiceImpl.LOGGER.info("[createAndModifyPrice][Updated Existing Price Config]");
         } else {
-            originalConfig = new ConsignPrice();
+            // Create new config
+            config.setIndex(0);
+            updatedConfig = repository.save(config);
+            ConsignPriceServiceImpl.LOGGER.info("[createAndModifyPrice][Created New Price Config]");
         }
-        originalConfig.setId(config.getId());
-        originalConfig.setIndex(0);
-        originalConfig.setInitialPrice(config.getInitialPrice());
-        originalConfig.setInitialWeight(config.getInitialWeight());
-        originalConfig.setWithinPrice(config.getWithinPrice());
-        originalConfig.setBeyondPrice(config.getBeyondPrice());
-        ConsignPrice newConfig = repository.save(originalConfig);
-        return new Response<>(1, success, newConfig);
+
+        return new Response<>(1, success, updatedConfig);
     }
 
     @Override
