@@ -43,7 +43,7 @@ while IFS= read -r dir || [[ -n "$dir" ]]; do
   if [[ ! -f "$dir/Dockerfile" ]]; then
     echo "Warning: No Dockerfile found in '$dir'. Skipping."
     continue
-  }
+  fi
   
   echo "Building Docker image in directory: $dir"
   IMAGE_NAME=$(basename "$dir")
