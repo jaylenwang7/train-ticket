@@ -114,6 +114,7 @@ spec:
       initContainers:
       - name: init-otel-agent
         image: {{ $root.Values.opentelemetry.image }}
+        imagePullPolicy: IfNotPresent
         command: ['sh', '-c', 'cp /javaagent.jar /otel-agent/otel-agent.jar']
         volumeMounts:
         - name: otel-agent
