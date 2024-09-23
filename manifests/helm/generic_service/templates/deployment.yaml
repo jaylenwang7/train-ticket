@@ -23,6 +23,13 @@ spec:
         envFrom:
         - secretRef:
             name: {{ $svc.secretRef | quote}}
+        readinessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          failureThreshold: 10
+          timeoutSeconds: 1
       {{- with $root.Values.global.monitoring}}
       {{- if eq $svc.lang "python"}} # python auto instrument
         env:
