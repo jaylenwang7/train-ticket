@@ -23,13 +23,15 @@ spec:
         envFrom:
         - secretRef:
             name: {{ $svc.secretRef | quote}}
+        {{- if ne $svc.name "ts-ticket-office-service" }}
         readinessProbe:
           tcpSocket:
             port: 8080
-          initialDelaySeconds: 5
-          periodSeconds: 5
-          failureThreshold: 10
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          failureThreshold: 3
           timeoutSeconds: 1
+        {{- end }}
       {{- with $root.Values.global.monitoring}}
       {{- if eq $svc.lang "python"}} # python auto instrument
         env:
