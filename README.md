@@ -41,3 +41,9 @@
   ts-discovery-service
   ...
   ```
+
+4. (Optional) If you want to redeploy a kubernetes deployment using the new image, run the following command:
+
+  ```
+  sudo kubectl rollout restart deployment <DEPLOYMENT_NAME> -n ts
+  ```
