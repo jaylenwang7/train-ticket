@@ -27,10 +27,10 @@ spec:
         readinessProbe:
           tcpSocket:
             port: 8080
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          failureThreshold: 3
-          timeoutSeconds: 1
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          failureThreshold: 5
+          timeoutSeconds: 2
         {{- end }}
       {{- with $root.Values.global.monitoring}}
       {{- if eq $svc.lang "python"}} # python auto instrument
