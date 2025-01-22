@@ -17,7 +17,10 @@ import edu.fudan.common.entity.SeatClass;
  * @author fdse
  */
 @Data
-@Table(name = "orders")
+@Table(name = "orders", indexes = {
+    @Index(name = "idx_order_account", columnList = "accountId"),
+    @Index(name = "idx_order_travel_train", columnList = "travelDate,trainNumber")
+})
 @Entity
 @GenericGenerator(name = "jpa-uuid", strategy = "org.hibernate.id.UUIDGenerator")
 @ToString
