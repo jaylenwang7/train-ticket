@@ -5,7 +5,6 @@ import edu.fudan.common.util.StringUtils;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 
-
 import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -17,6 +16,9 @@ import java.util.UUID;
  */
 @Data
 @Entity
+@Table(indexes = {
+    @Index(name = "idx_trip_lookup", columnList = "type,number")
+})
 @GenericGenerator(name = "jpa-uuid", strategy = "org.hibernate.id.UUIDGenerator")
 public class Trip {
     @Valid
@@ -33,7 +35,6 @@ public class Trip {
     private String trainTypeName;
 
     private String routeId;
-
 
     @Valid
     @NotNull
@@ -74,7 +75,7 @@ public class Trip {
         this.endTime = "";
     }
 
-    public Trip(){
+    public Trip() {
         //Default Constructor
         this.trainTypeName = "";
         this.startStationName = "";
@@ -82,5 +83,4 @@ public class Trip {
         this.startTime = "";
         this.endTime = "";
     }
-
 }
