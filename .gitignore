@@ -1,4 +1,5 @@
 target
 *.tgz
 set-docker.sh
+.vscode
 .DS_Store

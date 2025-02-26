@@ -47,3 +47,12 @@ postgresql:
 ```
 
 This new version is designed to offer a more streamlined, efficient, and powerful solution for managing train ticket services, leveraging the latest in technology and best practices.
+
+## JAYLEN'S NOTES
+* TO BUILD IMAGES: get a Linux machine (through CloudLab) - then run 
+
+      git clone https://github.com/jaylenwang7/train-ticket.git
+      sudo ./setup-build.sh
+      sudo ./build.sh -s [SUFFIX]
+
+  Where [SUFFIX] is the suffix of the image tag. For example, if you want to build the image with the tag `v1`, you would run `sudo ./build.sh -s v1`. NOTE: Docker should already be installed on the machine.

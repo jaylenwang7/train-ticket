@@ -17,7 +17,7 @@ global:
 skywalking:
   enabled: false
   image: apache/skywalking-java-agent:8.8.0-alpine
-
+  
 opentelemetry:
   enabled: true
   image: otel/autoinstrumentation-java:latest
@@ -167,69 +167,3 @@ services:
   tsWaitOrderService:
     name: ts-wait-order-service
     secretRef: ts-wait-order-service
-
-
-skywalking-helm:
-  oap:
-    name: oap
-    image:
-      tag: 9.6.0  # Must be set explicitly
-    storageType: postgresql
-    replicas: 2
-    service:
-      type: ClusterIP
-    javaOpts: -Xmx2g -Xms2g
-    resources:
-      limits:
-        cpu: 4
-        memory: 8Gi
-      requests:
-        cpu: 4
-        memory: 4Gi
-    livenessProbe: 
-      tcpSocket:
-        port: 12800
-      initialDelaySeconds: 10
-      periodSeconds: 20
-
-  ui:
-    name: ui
-    replicas: 1
-    image:
-      tag: 9.6.0  # Must be set explicitly
-    service:
-      type: ClusterIP
-  elasticsearch:
-    enabled: false
-
-  postgresql:
-    enabled: false # Whether to start a demo postgresql deployment, don't use this for production.
-    config:
-      # The hostname of your own postgresql service, this only takes effect when postgresql.enabled is false.
-      host: ts-postgresql # note: change the name to your corresponding name !!!!!!
-    auth:
-      username: postgres
-      password: "123456"
-      database: skywalking
-    containerPorts:
-      postgresql: 5432
-    primary:
-      persistence:
-        enabled: false
-    readReplicas:
-      persistence:
-        enabled: false
-
-  satellite:
-    image:
-      tag: 9.6.0 # Must be set explicitly
-
-postgresql:
-  global:
-    postgresql:
-      auth:
-        postgresPassword: 123456
-        database: skywalking
-      service:
-        ports:
-          postgresql: "5432"
