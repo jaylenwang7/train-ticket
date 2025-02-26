@@ -1,8 +1,9 @@
 global:
-  image:
-    repository: jaylenwang
-    tag: latest
-    pullPolicy: IfNotPresent
+  dockerRegistry: docker.io
+  repository: jaylenwang
+  imageName: ""
+  defaultImageVersion: latest
+  pullPolicy: IfNotPresent
   port: 8080
   mysql:
     host: "mysql"
@@ -11,7 +12,12 @@ global:
     user: "root"
     password: "yourpassword" 
   monitoring: "opentelemetry"
+  git: {} # For compatibility with other services
 
+skywalking:
+  enabled: false
+  image: apache/skywalking-java-agent:8.8.0-alpine
+  
 opentelemetry:
   enabled: true
   image: otel/autoinstrumentation-java:latest

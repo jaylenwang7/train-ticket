@@ -17,12 +17,21 @@ spec:
     spec:
       containers:
       - name: {{ $svc.name }}
-        image: "{{ $root.Values.global.image.repository }}/{{ $svc.name }}:{{ $root.Values.global.image.tag | default $root.Chart.AppVersion }}"
-        {{- with $root.Values.global.image.pullPolicy }}
+        image: "{{ $root.Values.global.dockerRegistry }}{{ if $root.Values.global.dockerRegistry }}/{{ end }}{{ $root.Values.global.repository }}/{{ $svc.name }}:{{ $root.Values.global.defaultImageVersion }}"
+        {{- with $root.Values.global.pullPolicy }}
         imagePullPolicy: {{ . }}{{- end}}
         envFrom:
         - secretRef:
             name: {{ $svc.secretRef | quote}}
+        {{- if ne $svc.name "ts-ticket-office-service" }}
+        readinessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 1
+          failureThreshold: 30
+          timeoutSeconds: 2
+        {{- end }}
       {{- with $root.Values.global.monitoring}}
       {{- if eq $svc.lang "python"}} # python auto instrument
         env:
@@ -31,7 +40,7 @@ spec:
           - name: OTEL_METRICS_EXPORTER
             value: console,otlp
           - name: OTEL_EXPORTER_OTLP_ENDPOINT
-            value: opentelemetry-collector-deployment.monitoring:4317
+            value: opentelemetry-collector-deployment:4317
       {{- end}}
       {{- if eq $svc.lang "javascript"}}
         env:
@@ -40,13 +49,13 @@ spec:
           - name: OTEL_METRICS_EXPORTER
             value: console,otlp
           - name: OTEL_EXPORTER_OTLP_ENDPOINT
-            value: opentelemetry-collector-deployment.monitoring:4317
+            value: opentelemetry-collector-deployment:4317
           - name: OTEL_NODE_RESOURCE_DETECTORS
             value: "env,host,os"
           - name: NODE_OPTIONS
             value: "--require @opentelemetry/auto-instrumentations-node/register"
       {{- end}}
-      {{- if not $svc.lang}} #如果没有设置语言，则默认是 java
+      {{- if not $svc.lang}} #if no language is set, default to java
       {{- if eq $root.Values.global.monitoring "skywalking"}}
         volumeMounts:
           - name: skywalking-agent
@@ -91,13 +100,13 @@ spec:
           - name: OTEL_RESOURCE_ATTRIBUTES
             value: "service.name={{ $svc.name }}"
           - name: OTEL_EXPORTER_OTLP_ENDPOINT
-            value: "http://opentelemetry-collector-deployment.monitoring:4317"
+            value: "http://opentelemetry-collector-deployment:4317"
           - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
-            value: "http://opentelemetry-collector-deployment.monitoring:4317"
+            value: "http://opentelemetry-collector-deployment:4317"
           - name: OTEL_EXPORTER_OTLP_METRICS_ENDPOINT
-            value: "http://opentelemetry-collector-deployment.monitoring:4317"
+            value: "http://opentelemetry-collector-deployment:4317"
           - name: OTEL_EXPORTER_OTLP_LOGS_ENDPOINT
-            value: "http://opentelemetry-collector-deployment.monitoring:4317"
+            value: "http://opentelemetry-collector-deployment:4317"
           - name: OTEL_EXPORTER_OTLP_PROTOCOL
             value: grpc
           - name: OTEL_METRICS_EXPORTER
@@ -114,6 +123,7 @@ spec:
       initContainers:
       - name: init-otel-agent
         image: {{ $root.Values.opentelemetry.image }}
+        imagePullPolicy: IfNotPresent
         command: ['sh', '-c', 'cp /javaagent.jar /otel-agent/otel-agent.jar']
         volumeMounts:
         - name: otel-agent
