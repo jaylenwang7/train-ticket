@@ -17,39 +17,49 @@ class UserCredentials:
         self.token = token
         self.contact_ids = contact_ids
 
-def load_credentials(filename: str = "user_credentials.txt") -> List[UserCredentials]:
-    users = []
-    with open(filename, "r") as f:
-        current_user = {}
-        contact_ids = []
-        
-        for line in f:
-            line = line.strip()
-            if line.startswith("Username:"):
-                current_user["username"] = line.split(":", 1)[1].strip()
-            elif line.startswith("Password:"):
-                current_user["password"] = line.split(":", 1)[1].strip()
-            elif line.startswith("UserId:"):
-                current_user["user_id"] = line.split(":", 1)[1].strip()
-            elif line.startswith("Token:"):
-                current_user["token"] = line.split(":", 1)[1].strip()
-            elif line.startswith("Contact IDs:"):
-                contact_ids = []
-            elif line.startswith("  "):  # Contact ID entry
-                contact_ids.append(line.strip())
-            elif line == "":  # Empty line indicates end of user entry
-                if current_user and contact_ids:
-                    users.append(UserCredentials(
-                        username=current_user["username"],
-                        password=current_user["password"],
-                        user_id=current_user["user_id"],
-                        token=current_user["token"],
-                        contact_ids=contact_ids
-                    ))
-                    current_user = {}
-                    contact_ids = []
+def load_credentials(filename: str = "user_credentials.json", debug: bool = True) -> List[UserCredentials]:
+    """
+    Load user credentials from a JSON file and convert them to UserCredentials objects.
     
-    return users
+    Args:
+        filename (str): Path to the credentials JSON file
+        debug (bool): If True, print debug information
+        
+    Returns:
+        List[UserCredentials]: List of UserCredentials objects
+    """
+    try:
+        with open(filename, 'r') as f:
+            users_data = json.load(f)
+            
+        users = []
+        for user_data in users_data:
+            user = UserCredentials(
+                username=user_data['username'],
+                password=user_data['password'],
+                user_id=user_data['id'],
+                token=user_data['token'],
+                contact_ids=user_data['contact_ids']
+            )
+            users.append(user)
+            
+        if debug:
+            print(f"Loaded {len(users)} users from {filename}")
+        return users
+        
+    except FileNotFoundError:
+        if debug:
+            print(f"Error: Credentials file '{filename}' not found. "
+                  f"Please run setup_users.py first.")
+        return []
+    except json.JSONDecodeError:
+        if debug:
+            print(f"Error: Invalid JSON in credentials file '{filename}'")
+        return []
+    except KeyError as e:
+        if debug:
+            print(f"Error: Missing required field in credentials file: {e}")
+        return []
 
 def load_stats_config():
     """
