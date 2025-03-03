@@ -1,16 +1,12 @@
 package main
 
 import (
-	"context"
+	"github.com/gin-gonic/gin"
+	"github.com/opentracing/opentracing-go"
+	"github.com/uber/jaeger-client-go"
+	jaegercfg "github.com/uber/jaeger-client-go/config"
 	"log"
 	"net/http"
-
-	"github.com/gin-gonic/gin"
-	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
-	"go.opentelemetry.io/otel/sdk/resource"
-	"go.opentelemetry.io/otel/sdk/trace"
-	semconv "go.opentelemetry.io/otel/semconv/v1.24.0"
 )
 
 type News struct {
@@ -18,43 +14,38 @@ type News struct {
 	Content string `json:"Content"`
 }
 
-func initTracer() {
-	exporter, err := stdouttrace.New(stdouttrace.WithPrettyPrint())
-	if err != nil {
-		log.Fatalf("Failed to create stdout trace exporter: %v", err)
+func initJaeger() {
+	cfg := jaegercfg.Configuration{
+		ServiceName: "ts-news-service",
+		Sampler: &jaegercfg.SamplerConfig{
+			Type:  jaeger.SamplerTypeConst,
+			Param: 1,
+		},
+		Reporter: &jaegercfg.ReporterConfig{
+			LogSpans:           true,
+			LocalAgentHostPort: "jaeger:6831",
+		},
 	}
 
-	res, err := resource.New(context.Background(),
-		resource.WithAttributes(
-			semconv.ServiceNameKey.String("ExampleService"),
-		),
-	)
+	tracer, _, err := cfg.NewTracer()
 	if err != nil {
-		log.Fatalf("Failed to create resource: %v", err)
+		log.Fatalf("Could not initialize jaeger tracer: %s", err.Error())
 	}
-
-	tp := trace.NewTracerProvider(
-		trace.WithBatcher(exporter),
-		trace.WithResource(res),
-	)
-	otel.SetTracerProvider(tp)
+	opentracing.SetGlobalTracer(tracer)
 }
 
-func traceMiddleware() gin.HandlerFunc {
+func tracingMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		tracer := otel.Tracer("gin-server")
-		ctx, span := tracer.Start(c.Request.Context(), "Handle "+c.Request.Method+" "+c.Request.URL.Path)
-		defer span.End()
-
-		c.Request = c.Request.WithContext(ctx)
+		spanCtx, _ := opentracing.StartSpanFromContext(c.Request.Context(), c.Request.URL.Path)
+		defer spanCtx.Finish()
 		c.Next()
 	}
 }
 
 func main() {
-	initTracer()
+	initJaeger()
 	r := gin.Default()
-	r.Use(traceMiddleware())
+	r.Use(tracingMiddleware())
 
 	r.GET("/hello", func(c *gin.Context) {
 		c.String(200, "Hello, World!")

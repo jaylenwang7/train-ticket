@@ -17,8 +17,11 @@ WORKDIR /app
 
 RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 RUN pip install -r requirements.txt
-RUN opentelemetry-bootstrap -a install
-ENV OTEL_SERVICE_NAME ts-avatar-service
-CMD ["opentelemetry-instrument", "gunicorn", "-w", "4", "-b", "0.0.0.0:8080", "app:app"]
+
+# Environment variables for Jaeger
+ENV JAEGER_AGENT_HOST=jaeger
+ENV JAEGER_AGENT_PORT=6831
+
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8080", "app:app"]
 
 EXPOSE 8080

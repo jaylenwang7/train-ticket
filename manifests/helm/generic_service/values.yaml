@@ -11,7 +11,7 @@ global:
     database: "ts"
     user: "root"
     password: "yourpassword" 
-  monitoring: "opentelemetry"
+  monitoring: "jaeger"
   git: {} # For compatibility with other services
 
 skywalking:
@@ -19,8 +19,7 @@ skywalking:
   image: apache/skywalking-java-agent:8.8.0-alpine
   
 opentelemetry:
-  enabled: true
-  image: otel/autoinstrumentation-java:latest
+  enabled: false
 
 services:
   tsAdminBasicInfoService:

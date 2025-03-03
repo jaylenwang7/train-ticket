@@ -33,30 +33,26 @@ spec:
           timeoutSeconds: 2
         {{- end }}
       {{- with $root.Values.global.monitoring}}
-      {{- if eq $svc.lang "python"}} # python auto instrument
+      {{- if eq . "jaeger"}} {{- if eq $svc.lang "python"}}
         env:
-          - name: OTEL_TRACES_EXPORTER
-            value: console,otlp
-          - name: OTEL_METRICS_EXPORTER
-            value: console,otlp
-          - name: OTEL_EXPORTER_OTLP_ENDPOINT
-            value: opentelemetry-collector-deployment:4317
+          - name: JAEGER_AGENT_HOST
+            value: jaeger
+          - name: JAEGER_AGENT_PORT
+            value: "6831"
+          - name: JAEGER_SERVICE_NAME
+            value: {{ $svc.name }}
       {{- end}}
       {{- if eq $svc.lang "javascript"}}
         env:
-          - name: OTEL_TRACES_EXPORTER
-            value: console,otlp
-          - name: OTEL_METRICS_EXPORTER
-            value: console,otlp
-          - name: OTEL_EXPORTER_OTLP_ENDPOINT
-            value: opentelemetry-collector-deployment:4317
-          - name: OTEL_NODE_RESOURCE_DETECTORS
-            value: "env,host,os"
-          - name: NODE_OPTIONS
-            value: "--require @opentelemetry/auto-instrumentations-node/register"
+          - name: JAEGER_AGENT_HOST
+            value: jaeger
+          - name: JAEGER_AGENT_PORT
+            value: "6831"
+          - name: JAEGER_SERVICE_NAME
+            value: {{ $svc.name }}
       {{- end}}
-      {{- if not $svc.lang}} #if no language is set, default to java
-      {{- if eq $root.Values.global.monitoring "skywalking"}}
+      {{- end}}
+      {{- if eq . "skywalking"}} {{- if not $svc.lang}}
         volumeMounts:
           - name: skywalking-agent
             mountPath: /skywalking-agent
@@ -88,47 +84,6 @@ spec:
         - name: skywalking-agent
           mountPath: /skywalking-agent
       {{- end}}
-      {{- if eq $root.Values.global.monitoring "opentelemetry"}}
-        volumeMounts:
-          - name: otel-agent
-            mountPath: /otel-agent
-        env:
-          - name: NODE_IP
-            valueFrom:
-              fieldRef:
-                fieldPath: status.hostIP
-          - name: OTEL_RESOURCE_ATTRIBUTES
-            value: "service.name={{ $svc.name }}"
-          - name: OTEL_EXPORTER_OTLP_ENDPOINT
-            value: "http://opentelemetry-collector-deployment:4317"
-          - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
-            value: "http://opentelemetry-collector-deployment:4317"
-          - name: OTEL_EXPORTER_OTLP_METRICS_ENDPOINT
-            value: "http://opentelemetry-collector-deployment:4317"
-          - name: OTEL_EXPORTER_OTLP_LOGS_ENDPOINT
-            value: "http://opentelemetry-collector-deployment:4317"
-          - name: OTEL_EXPORTER_OTLP_PROTOCOL
-            value: grpc
-          - name: OTEL_METRICS_EXPORTER
-            value: otlp
-          - name: OTEL_TRACES_EXPORTER
-            value: otlp
-          - name: OTEL_LOGS_EXPORTER
-            value: otlp
-          - name: JAVA_TOOL_OPTIONS
-            value: "-javaagent:/otel-agent/otel-agent.jar -Dotel.instrumentation.common.experimental.controller-telemetry.enabled=true"
-      volumes:
-        - name: otel-agent
-          emptyDir: {}
-      initContainers:
-      - name: init-otel-agent
-        image: {{ $root.Values.opentelemetry.image }}
-        imagePullPolicy: IfNotPresent
-        command: ['sh', '-c', 'cp /javaagent.jar /otel-agent/otel-agent.jar']
-        volumeMounts:
-        - name: otel-agent
-          mountPath: /otel-agent
-      {{- end}} 
       {{- end}}
       {{- end}}
 ---

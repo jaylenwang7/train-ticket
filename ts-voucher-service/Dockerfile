@@ -19,5 +19,9 @@ RUN pip install cryptography
 RUN pip install --no-cache-dir -r requirements.txt
 
 ADD ./server.py /app/
-ENV OTEL_SERVICE_NAME ts-voucher-service
-CMD ["opentelemetry-instrument", "python", "server.py" ]
+
+# Environment variables for Jaeger
+ENV JAEGER_AGENT_HOST=jaeger
+ENV JAEGER_AGENT_PORT=6831
+
+CMD ["python", "server.py"]
