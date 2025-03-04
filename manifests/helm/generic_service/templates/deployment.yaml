@@ -43,7 +43,7 @@ spec:
             value: {{ $svc.name }}
         {{- end}}
         {{- end}}
-      {{- if eq . "skywalking"}} {{- if not $svc.lang}}
+        {{- if eq $root.Values.global.monitoring "skywalking" }}{{- if not $svc.lang}}
         volumeMounts:
           - name: skywalking-agent
             mountPath: /skywalking-agent
