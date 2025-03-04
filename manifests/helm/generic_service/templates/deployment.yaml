@@ -36,11 +36,15 @@ spec:
         {{- with $root.Values.global.monitoring}}
         {{- if eq . "jaeger"}}
           - name: JAEGER_AGENT_HOST
-            value: jaeger
+            value: {{ $root.Values.jaeger.agentHost | default "jaeger" }}
           - name: JAEGER_AGENT_PORT
-            value: "6831"
+            value: {{ $root.Values.jaeger.agentPort | default "6831" | quote }}
           - name: JAEGER_SERVICE_NAME
             value: {{ $svc.name }}
+          - name: JAEGER_SAMPLER_TYPE
+            value: {{ $root.Values.jaeger.samplerType | default "const" }}
+          - name: JAEGER_SAMPLER_PARAM
+            value: {{ $root.Values.jaeger.samplerParam | default "1" | quote }}
         {{- end}}
         {{- end}}
         {{- if eq $root.Values.global.monitoring "skywalking" }}{{- if not $svc.lang}}
