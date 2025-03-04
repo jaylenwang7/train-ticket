@@ -32,26 +32,17 @@ spec:
           failureThreshold: 30
           timeoutSeconds: 2
         {{- end }}
-      {{- with $root.Values.global.monitoring}}
-      {{- if eq . "jaeger"}} {{- if eq $svc.lang "python"}}
         env:
+        {{- with $root.Values.global.monitoring}}
+        {{- if eq . "jaeger"}}
           - name: JAEGER_AGENT_HOST
             value: jaeger
           - name: JAEGER_AGENT_PORT
             value: "6831"
           - name: JAEGER_SERVICE_NAME
             value: {{ $svc.name }}
-      {{- end}}
-      {{- if eq $svc.lang "javascript"}}
-        env:
-          - name: JAEGER_AGENT_HOST
-            value: jaeger
-          - name: JAEGER_AGENT_PORT
-            value: "6831"
-          - name: JAEGER_SERVICE_NAME
-            value: {{ $svc.name }}
-      {{- end}}
-      {{- end}}
+        {{- end}}
+        {{- end}}
       {{- if eq . "skywalking"}} {{- if not $svc.lang}}
         volumeMounts:
           - name: skywalking-agent
@@ -83,7 +74,6 @@ spec:
         volumeMounts:
         - name: skywalking-agent
           mountPath: /skywalking-agent
-      {{- end}}
       {{- end}}
       {{- end}}
 ---
