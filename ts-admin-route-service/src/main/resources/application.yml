@@ -1,12 +1,9 @@
-opentracing:
-  jaeger:
-    udp-sender:
-      host: jaeger
-      port: 6831
 server:
   port: 8080
+
 spring:
   application:
     name: ts-admin-route-service
+
 swagger:
   controllerPackage: adminroute.controller

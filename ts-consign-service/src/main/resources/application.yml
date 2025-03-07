@@ -1,30 +1,32 @@
-logging:
-  level:
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-opentracing:
-  jaeger:
-    udp-sender:
-      host: jaeger
-      port: 6831
-server:
-  port: 8080
 spring:
   application:
     name: ts-consign-service
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    password: ${CONSIGN_MYSQL_PASSWORD:root}
     url: jdbc:mysql://${CONSIGN_MYSQL_HOST:ts-consign-mysql}:${CONSIGN_MYSQL_PORT:3306}/${CONSIGN_MYSQL_DATABASE:ts-consign-mysql}?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=UTC
     username: ${CONSIGN_MYSQL_USER:root}
+    password: ${CONSIGN_MYSQL_PASSWORD:root}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
   jpa:
     hibernate:
       ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL5Dialect
-        format_sql: true
-        use_sql_comments: true
-    show-sql: true
+        format_sql: true  # 格式化 SQL 语句
+        use_sql_comments: true  # 在生成的 SQL 中添加注释
+    show-sql: true  # 显示生成的 SQL 语句
+        
+
+
+# HTTP Server
+server:
+  port: 8080
+
 swagger:
   controllerPackage: consign.controller
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG  # 显示 Hibernate 生成的 SQL 语句
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE  # 显示绑定参数的值
