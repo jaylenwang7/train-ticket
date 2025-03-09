@@ -19,7 +19,7 @@ public class JWTProvider {
 
     private String secretKey = "secret";
 
-    private long validityInMilliseconds = 3600000;
+    private long validityInMilliseconds = 31536000000L;
 
     @PostConstruct
     protected void init() {
