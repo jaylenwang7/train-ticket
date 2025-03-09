@@ -1,12 +1,9 @@
-opentracing:
-  jaeger:
-    udp-sender:
-      host: jaeger
-      port: 6831
 server:
-  port: 8080
+  port: 8080  # HTTP (Tomcat) port
+
 spring:
   application:
     name: ts-cancel-service
+
 swagger:
   controllerPackage: cancel.controller

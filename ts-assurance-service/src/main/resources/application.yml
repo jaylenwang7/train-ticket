@@ -1,18 +1,13 @@
-opentracing:
-  jaeger:
-    udp-sender:
-      host: jaeger
-      port: 6831
 server:
   port: 8080
 spring:
   application:
     name: ts-assurance-service
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    password: ${ASSURANCE_MYSQL_PASSWORD:root}
     url: jdbc:mysql://${ASSURANCE_MYSQL_HOST:ts-assurance-mysql}:${ASSURANCE_MYSQL_PORT:3306}/${ASSURANCE_MYSQL_DATABASE:ts-assurance-mysql}?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=UTC
     username: ${ASSURANCE_MYSQL_USER:root}
+    password: ${ASSURANCE_MYSQL_PASSWORD:root}
+    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
       ddl-auto: update
