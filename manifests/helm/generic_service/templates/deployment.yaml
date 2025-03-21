@@ -1,3 +1,4 @@
+deployment:
 {{- $root := . }}
 {{- range $name, $svc := .Values.services }}
 apiVersion: apps/v1
@@ -38,7 +39,9 @@ spec:
           - name: OTEL_TRACES_EXPORTER
             value: console,otlp
           - name: OTEL_METRICS_EXPORTER
-            value: console,otlp
+            value: none
+          - name: OTEL_LOGS_EXPORTER
+            value: none
           - name: OTEL_EXPORTER_OTLP_ENDPOINT
             value: opentelemetry-collector-deployment:4317
       {{- end}}
@@ -47,7 +50,9 @@ spec:
           - name: OTEL_TRACES_EXPORTER
             value: console,otlp
           - name: OTEL_METRICS_EXPORTER
-            value: console,otlp
+            value: none
+          - name: OTEL_LOGS_EXPORTER
+            value: none
           - name: OTEL_EXPORTER_OTLP_ENDPOINT
             value: opentelemetry-collector-deployment:4317
           - name: OTEL_NODE_RESOURCE_DETECTORS
@@ -84,7 +89,7 @@ spec:
           - name: OTEL_EXPORTER_OTLP_ENDPOINT
             value: "http://opentelemetry-collector-deployment:4317"
           - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
-            value: "http://opentelemetry-collector-deployment:4317"
+            value: "http://opentelemetry-collector-deployment:4317" 
           - name: OTEL_EXPORTER_OTLP_METRICS_ENDPOINT
             value: "http://opentelemetry-collector-deployment:4317"
           - name: OTEL_EXPORTER_OTLP_LOGS_ENDPOINT
@@ -92,11 +97,15 @@ spec:
           - name: OTEL_EXPORTER_OTLP_PROTOCOL
             value: grpc
           - name: OTEL_METRICS_EXPORTER
-            value: otlp
+            value: none
           - name: OTEL_TRACES_EXPORTER
             value: otlp
           - name: OTEL_LOGS_EXPORTER
-            value: otlp
+            value: none
+          - name: SPRING_MAIN_LAZY_INITIALIZATION
+            value: "true"
+          - name: JAVA_TOOL_OPTIONS
+            value: "-XX:+TieredCompilation -XX:TieredStopAtLevel=1 -Djava.security.egd=file:/dev/./urandom"
       {{- end}} 
       {{- end}}
       {{- end}}
