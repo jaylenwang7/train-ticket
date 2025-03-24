@@ -15,6 +15,10 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL5Dialect
+  rest:
+    template:
+      connection-timeout: 100
+      read-timeout: 100
 
 swagger:
   controllerPackage: fooddelivery.controller

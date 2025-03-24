@@ -33,9 +33,21 @@ spec:
           failureThreshold: 30
           timeoutSeconds: 2
         {{- end }}
+        env:
+          - name: SPRINGFOX_DOCUMENTATION_ENABLED
+            value: "false"
+          - name: SPRING_MAIN_LAZY_INITIALIZATION
+            value: "true"
+          - name: SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE
+            value: "1"
+          - name: SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE
+            value: "5"
+          - name: SPRING_JPA_OPEN_IN_VIEW
+            value: "false"
+          - name: JAVA_TOOL_OPTIONS
+            value: "-XX:+TieredCompilation -XX:TieredStopAtLevel=1 -Djava.security.egd=file:/dev/./urandom -XX:+AlwaysPreTouch -Xverify:none"
       {{- with $root.Values.global.monitoring}}
       {{- if eq $svc.lang "python"}} # python auto instrument
-        env:
           - name: OTEL_TRACES_EXPORTER
             value: console,otlp
           - name: OTEL_METRICS_EXPORTER
@@ -46,7 +58,6 @@ spec:
             value: opentelemetry-collector-deployment:4317
       {{- end}}
       {{- if eq $svc.lang "javascript"}}
-        env:
           - name: OTEL_TRACES_EXPORTER
             value: console,otlp
           - name: OTEL_METRICS_EXPORTER
@@ -62,7 +73,6 @@ spec:
       {{- end}}
       {{- if not $svc.lang}} #if no language is set, default to java
       {{- if eq $root.Values.global.monitoring "skywalking"}}
-        env:
           - name: NODE_IP
             valueFrom:
               fieldRef:
@@ -79,7 +89,6 @@ spec:
                 fieldPath: metadata.labels['app']
       {{- end}}
       {{- if eq $root.Values.global.monitoring "opentelemetry"}}
-        env:
           - name: NODE_IP
             valueFrom:
               fieldRef:
@@ -102,10 +111,6 @@ spec:
             value: otlp
           - name: OTEL_LOGS_EXPORTER
             value: none
-          - name: SPRING_MAIN_LAZY_INITIALIZATION
-            value: "true"
-          - name: JAVA_TOOL_OPTIONS
-            value: "-XX:+TieredCompilation -XX:TieredStopAtLevel=1 -Djava.security.egd=file:/dev/./urandom"
       {{- end}} 
       {{- end}}
       {{- end}}
