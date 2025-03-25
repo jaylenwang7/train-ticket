@@ -18,8 +18,8 @@ spring:
     show-sql: true  # 显示生成的 SQL 语句
   rest:
     template:
-      connection-timeout: 100
-      read-timeout: 100
+      connection-timeout: 200
+      read-timeout: 5000
         
 
 

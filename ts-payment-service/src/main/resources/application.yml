@@ -20,8 +20,8 @@ spring:
         dialect: org.hibernate.dialect.MySQL5Dialect
   rest:
     template:
-      connection-timeout: 100
-      read-timeout: 100
+      connection-timeout: 200
+      read-timeout: 5000
 
 swagger:
   controllerPackage: com.trainticket.controller
