@@ -36,11 +36,15 @@ class UserSetup:
 
     def get_admin_token(self):
         print("Getting admin token...")
+        start_time = time.time()
         login_response, login_code = self.make_request("POST", f"{self.base_url}/api/v1/users/login", {
             "username": "admin",
             "password": "222222",
             "verificationCode": "123"
         })
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        print(f"Admin login time: {elapsed_time:.2f} seconds")
 
         if login_code != 200 or not login_response.get('data') or not login_response['data'].get('token'):
             print("Error logging in as admin.")
@@ -118,9 +122,11 @@ class UserSetup:
             sys.exit(1)
 
         start_time = time.time()
+        user_times = []
 
         # Use tqdm to track progress
         for i in tqdm(range(num_users), desc="Creating users"):
+            user_start_time = time.time()
             username, password = self.create_user(admin_token)
             if not username or not password:
                 continue
@@ -140,6 +146,10 @@ class UserSetup:
             if not user_contact_ids:
                 continue
 
+            user_end_time = time.time()
+            user_elapsed_time = user_end_time - user_start_time
+            user_times.append(user_elapsed_time)
+
             all_users.append({
                 "username": username,
                 "password": password,
@@ -151,10 +161,13 @@ class UserSetup:
         # Save all users at once
         with open(self.credentials_file, "w") as f:
             json.dump(all_users, f)
+        
+        avg_user_time = sum(user_times) / len(user_times)
 
         end_time = time.time()
         elapsed_time = end_time - start_time
         print(f"Finished creating {num_users} users in {elapsed_time:.2f} seconds")
+        print(f"Average user creation time: {avg_user_time:.2f} seconds")
 
 def main():
     parser = argparse.ArgumentParser(description='Setup users for load testing')
