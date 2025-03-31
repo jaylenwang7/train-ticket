@@ -36,8 +36,6 @@ spec:
         env:
           - name: SPRINGFOX_DOCUMENTATION_ENABLED
             value: "false"
-          - name: SPRING_JPA_OPEN_IN_VIEW
-            value: "false"
           - name: JAVA_TOOL_OPTIONS
             value: "-XX:+TieredCompilation -XX:TieredStopAtLevel=1 -Djava.security.egd=file:/dev/./urandom -XX:+AlwaysPreTouch -Xverify:none"
           - name: SPRING_REST_TEMPLATE_CONNECTION_TIMEOUT
