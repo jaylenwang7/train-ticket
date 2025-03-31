@@ -36,12 +36,6 @@ spec:
         env:
           - name: SPRINGFOX_DOCUMENTATION_ENABLED
             value: "false"
-          - name: SPRING_MAIN_LAZY_INITIALIZATION
-            value: "true"
-          - name: SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE
-            value: "1"
-          - name: SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE
-            value: "5"
           - name: SPRING_JPA_OPEN_IN_VIEW
             value: "false"
           - name: JAVA_TOOL_OPTIONS
