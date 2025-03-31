@@ -13,6 +13,9 @@ global:
     password: "yourpassword" 
   monitoring: "opentelemetry"
   git: {} # For compatibility with other services
+  restTemplate:
+    connectionTimeout: 30000
+    readTimeout: 30000
 
 skywalking:
   enabled: false
@@ -97,6 +100,9 @@ services:
   tsOrderService:
     name: ts-order-service
     secretRef: ts-order-service
+    # restTemplate:
+    #   connectionTimeout: 2000
+    #   readTimeout: 15000
   tsPaymentService:
     name: ts-payment-service
     secretRef: ts-payment-service
