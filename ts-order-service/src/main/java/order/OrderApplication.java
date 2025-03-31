@@ -47,9 +47,9 @@ public class OrderApplication {
     private static final Logger logger = LoggerFactory.getLogger(OrderApplication.class);
 
     // Inject the timeout values
-    @Value("${spring.rest.template.connection-timeout:5000}")
+    @Value("${spring.rest.template.connection-timeout:30000}")
     private int connectTimeoutValue;
 
-    @Value("${spring.rest.template.read-timeout:5000}")
+    @Value("${spring.rest.template.read-timeout:30000}")
     private int readTimeoutValue;
 }
