@@ -14,9 +14,9 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL5Dialect
-  rest:
-    template:
-      connection-timeout: 500
-      read-timeout: 5000
+  # rest:
+  #   template:
+  #     connection-timeout: 500
+  #     read-timeout: 5000
 swagger:
   controllerPackage: auth.controller
