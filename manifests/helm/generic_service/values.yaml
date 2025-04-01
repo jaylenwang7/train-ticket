@@ -14,8 +14,8 @@ global:
   monitoring: "opentelemetry"
   git: {} # For compatibility with other services
   restTemplate:
-    connectionTimeout: 30000
-    readTimeout: 30000
+    connectionTimeout: 500
+    readTimeout: 5000
 
 skywalking:
   enabled: false
