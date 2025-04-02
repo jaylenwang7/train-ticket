@@ -16,6 +16,15 @@ spec:
       labels:
         app: {{ $svc.name }}
     spec:
+      {{- if eq $svc.name "ts-ui-dashboard" }}
+      volumes:
+      - name: nginx-conf
+        configMap:
+          name: nginx-conf
+      - name: opentelemetry-module-conf
+        configMap:
+          name: opentelemetry-module-conf
+      {{- end }}
       containers:
       - name: {{ $svc.name }}
         image: "{{ $root.Values.global.dockerRegistry }}{{ if $root.Values.global.dockerRegistry }}/{{ end }}{{ $root.Values.global.repository }}/{{ $svc.name }}:{{ $root.Values.global.defaultImageVersion }}"
