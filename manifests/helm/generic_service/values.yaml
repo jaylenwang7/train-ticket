@@ -16,6 +16,8 @@ global:
   restTemplate:
     connectionTimeout: 100
     readTimeout: 1000
+  logging:
+    root: WARN
 
 skywalking:
   enabled: false

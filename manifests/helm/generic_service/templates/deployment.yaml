@@ -42,6 +42,8 @@ spec:
             value: "{{ with $svc.restTemplate }}{{ .connectionTimeout }}{{ else }}{{ $root.Values.global.restTemplate.connectionTimeout }}{{ end }}"
           - name: SPRING_REST_TEMPLATE_READ_TIMEOUT
             value: "{{ with $svc.restTemplate }}{{ .readTimeout }}{{ else }}{{ $root.Values.global.restTemplate.readTimeout }}{{ end }}"
+          - name: LOGGING_LEVEL_ROOT
+            value: "{{ with $svc.logging }}{{ .root }}{{ else }}{{ $root.Values.global.logging.root }}{{ end }}"
       {{- with $root.Values.global.monitoring}}
       {{- if eq $svc.lang "python"}} # python auto instrument
           - name: OTEL_TRACES_EXPORTER
