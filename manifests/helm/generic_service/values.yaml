@@ -162,6 +162,17 @@ services:
     secretRef: ts-ui-dashboard
     type: NodePort
     nodePort: 30080
+    nginx:
+      errorLogLevel: warn  # Set to error, warn, info, debug as needed
+    opentelemetry:
+      enabled: "ON"
+      exporter: "otlp"
+      endpoint: "opentelemetry-collector-deployment:4317"
+      serviceName: "Gateway"
+      serviceNamespace: "Gateway"
+      serviceInstanceId: "Nginx"
+      resolveBackends: "ON"
+      traceAsError: "OFF"
   tsUserService:
     name: ts-user-service
     secretRef: ts-user-service

@@ -33,6 +33,15 @@ spec:
           failureThreshold: 30
           timeoutSeconds: 2
         {{- end }}
+        {{- if eq $svc.name "ts-ui-dashboard" }}
+        volumeMounts:
+        - name: nginx-conf
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+        - name: opentelemetry-module-conf
+          mountPath: /etc/nginx/conf.d/opentelemetry_module.conf
+          subPath: opentelemetry_module.conf
+        {{- end }}
         env:
           - name: SPRINGFOX_DOCUMENTATION_ENABLED
             value: "false"

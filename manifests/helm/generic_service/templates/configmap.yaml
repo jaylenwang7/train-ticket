@@ -1,0 +1,26 @@
+{{- if hasKey .Values.services "tsUiDashboard" }}
+{{- $uiDashboard := .Values.services.tsUiDashboard }}
+{{- if eq $uiDashboard.name "ts-ui-dashboard" }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-conf
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ $uiDashboard.name }}
+data:
+  nginx.conf: |-
+{{- include "nginx.conf" (dict "Values" $uiDashboard) | nindent 4 }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: opentelemetry-module-conf
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ $uiDashboard.name }}
+data:
+  opentelemetry_module.conf: |-
+{{- include "opentelemetry_module.conf" (dict "Values" $uiDashboard) | nindent 4 }}
+{{- end }}
+{{- end }}
