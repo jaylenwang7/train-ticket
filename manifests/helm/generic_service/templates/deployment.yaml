@@ -25,6 +25,7 @@ spec:
         configMap:
           name: opentelemetry-module-conf
       {{- end }}
+      terminationGracePeriodSeconds: 30
       containers:
       - name: {{ $svc.name }}
         image: "{{ $root.Values.global.dockerRegistry }}{{ if $root.Values.global.dockerRegistry }}/{{ end }}{{ $root.Values.global.repository }}/{{ $svc.name }}:{{ $root.Values.global.defaultImageVersion }}"
@@ -42,6 +43,10 @@ spec:
           failureThreshold: 30
           timeoutSeconds: 2
         {{- end }}
+        lifecycle:
+          preStop:
+            exec:
+              command: ["sh", "-c", "sleep 10"]
         {{- if eq $svc.name "ts-ui-dashboard" }}
         volumeMounts:
         - name: nginx-conf
