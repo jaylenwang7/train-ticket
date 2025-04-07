@@ -50,6 +50,13 @@ services:
     name: ts-auth-service
     secretRef: ts-auth-service
   tsAvatarService:
+    readinessProbe:
+      tcpSocket:
+        port: 8080
+      initialDelaySeconds: 5
+      periodSeconds: 1
+      failureThreshold: 30
+      timeoutSeconds: 2
     name: ts-avatar-service
     secretRef: ts-avatar-service
     language: python
@@ -90,10 +97,24 @@ services:
     name: ts-inside-payment-service
     secretRef: ts-inside-payment-service
   tsNewsService:
+    readinessProbe:
+      tcpSocket:
+        port: 8080
+      initialDelaySeconds: 5
+      periodSeconds: 1
+      failureThreshold: 30
+      timeoutSeconds: 2
     name: ts-news-service
     secretRef: ts-news-service
     language: golang
   tsNotificationService:
+    readinessProbe:
+      tcpSocket:
+        port: 8080
+      initialDelaySeconds: 5
+      periodSeconds: 1
+      failureThreshold: 30
+      timeoutSeconds: 2
     name: ts-notification-service
     secretRef: ts-notification-service
   tsOrderOtherService:
@@ -158,6 +179,13 @@ services:
     name: ts-travel2-service
     secretRef: ts-travel2-service
   tsUiDashboard:
+    readinessProbe:
+      tcpSocket:
+        port: 8080
+      initialDelaySeconds: 5
+      periodSeconds: 1
+      failureThreshold: 30
+      timeoutSeconds: 2
     name: ts-ui-dashboard
     secretRef: ts-ui-dashboard
     type: NodePort
@@ -180,6 +208,13 @@ services:
     name: ts-verification-code-service
     secretRef: ts-verification-code-service
   tsVoucherService:
+    readinessProbe:
+      tcpSocket:
+        port: 8080
+      initialDelaySeconds: 5
+      periodSeconds: 1
+      failureThreshold: 30
+      timeoutSeconds: 2
     name: ts-voucher-service
     secretRef: ts-voucher-service
     language: python
