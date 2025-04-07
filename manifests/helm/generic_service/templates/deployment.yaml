@@ -72,6 +72,12 @@ spec:
             value: "{{ with $svc.logging }}{{ .root }}{{ else }}{{ $root.Values.global.logging.root }}{{ end }}"
           - name: OTEL_INSTRUMENTATION_SPRING_WEB_EXCLUDE_PATHS
             value: "/actuator/health"
+          - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
+            value: "health"
+          - name: MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS
+            value: "always"
+          - name: SPRING_SECURITY_MANAGEMENT_ENDPOINTS_WEB_SECURITY_ENABLED
+            value: "false"
       {{- with $root.Values.global.monitoring}}
       {{- if eq $svc.lang "python"}} # python auto instrument
           - name: OTEL_TRACES_EXPORTER
