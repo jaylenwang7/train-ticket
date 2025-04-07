@@ -1,4 +1,3 @@
-deployment:
 {{- $root := . }}
 {{- range $name, $svc := .Values.services }}
 apiVersion: apps/v1
