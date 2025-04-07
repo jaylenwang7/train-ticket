@@ -38,7 +38,8 @@ spec:
           {{- if $svc.readinessProbe }}
           {{- toYaml $svc.readinessProbe | nindent 10 }}
           {{- else }}
-          tcpSocket:
+          httpGet:
+            path: /actuator/health
             port: 8080
           initialDelaySeconds: 5
           periodSeconds: 1
