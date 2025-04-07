@@ -36,12 +36,16 @@ spec:
             name: {{ $svc.secretRef | quote}}
         {{- if ne $svc.name "ts-ticket-office-service" }}
         readinessProbe:
+          {{- if $svc.readinessProbe }}
+          {{- toYaml $svc.readinessProbe | nindent 10 }}
+          {{- else }}
           tcpSocket:
             port: 8080
           initialDelaySeconds: 5
           periodSeconds: 1
           failureThreshold: 30
           timeoutSeconds: 2
+          {{- end }}
         {{- end }}
         lifecycle:
           preStop:

@@ -15,5 +15,14 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQL5Dialect
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
+
 swagger:
   controllerPackage: assurance.controller

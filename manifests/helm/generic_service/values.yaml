@@ -46,6 +46,14 @@ services:
   tsAssuranceService:
     name: ts-assurance-service
     secretRef: ts-assurance-service
+    readinessProbe:
+      httpGet:
+        path: /actuator/health
+        port: 8080
+      initialDelaySeconds: 5
+      periodSeconds: 1
+      failureThreshold: 30
+      timeoutSeconds: 2
   tsAuthService:
     name: ts-auth-service
     secretRef: ts-auth-service
