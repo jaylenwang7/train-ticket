@@ -47,7 +47,8 @@ services:
     name: ts-assurance-service
     secretRef: ts-assurance-service
     readinessProbe:
-      tcpSocket:
+      httpGet:
+        path: /actuator/health
         port: 8080
       initialDelaySeconds: 5
       periodSeconds: 1

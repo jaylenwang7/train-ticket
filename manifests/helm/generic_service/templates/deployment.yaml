@@ -70,6 +70,8 @@ spec:
             value: "{{ with $svc.restTemplate }}{{ .readTimeout }}{{ else }}{{ $root.Values.global.restTemplate.readTimeout }}{{ end }}"
           - name: LOGGING_LEVEL_ROOT
             value: "{{ with $svc.logging }}{{ .root }}{{ else }}{{ $root.Values.global.logging.root }}{{ end }}"
+          - name: OTEL_INSTRUMENTATION_SPRING_WEB_EXCLUDE_PATHS
+            value: "/actuator/health"
       {{- with $root.Values.global.monitoring}}
       {{- if eq $svc.lang "python"}} # python auto instrument
           - name: OTEL_TRACES_EXPORTER
