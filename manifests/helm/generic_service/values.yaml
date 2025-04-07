@@ -15,7 +15,7 @@ global:
   git: {} # For compatibility with other services
   restTemplate:
     connectionTimeout: 50
-    readTimeout: 800
+    readTimeout: 500
   logging:
     root: WARN
 
