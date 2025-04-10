@@ -89,6 +89,12 @@ spec:
             value: "parentbased_always_on"
           - name: OTEL_TRACES_SAMPLER_ARG
             value: "exclude:/actuator/health"
+          - name: OTEL_INSTRUMENTATION_HTTP_URL_FILTER_ENABLED
+            value: "true"
+          - name: OTEL_INSTRUMENTATION_HTTP_URL_FILTER_EXCLUDELIST
+            value: "/actuator/health"
+          - name: OTEL_INSTRUMENTATION_SPRING_WEBMVC_EXCLUDE_URLS
+            value: "/actuator/health"
       {{- with $root.Values.global.monitoring}}
       {{- if eq $svc.lang "python"}} # python auto instrument
           - name: OTEL_TRACES_EXPORTER
