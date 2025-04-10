@@ -90,9 +90,9 @@ spec:
           - name: MANAGEMENT_HEALTH_RABBIT_ENABLED
             value: "false"
           - name: OTEL_TRACES_SAMPLER
-            value: "parentbased_always_on"
+            value: "parentbased_traceidratio"
           - name: OTEL_TRACES_SAMPLER_ARG
-            value: "exclude:/actuator/health"
+            value: "1.0;url.path!=/actuator/health"
           - name: OTEL_INSTRUMENTATION_HTTP_URL_FILTER_ENABLED
             value: "true"
           - name: OTEL_INSTRUMENTATION_HTTP_URL_FILTER_EXCLUDELIST
