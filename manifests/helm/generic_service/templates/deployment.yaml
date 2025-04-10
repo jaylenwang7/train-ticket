@@ -75,6 +75,10 @@ spec:
             value: "/actuator/health"
           - name: OTEL_INSTRUMENTATION_TOMCAT_EXCLUDE_PATHS
             value: "/actuator/health"
+          - name: OTEL_INSTRUMENTATION_SPRING_WEBMVC_EXCLUDED_PATHS
+            value: "/actuator/health"
+          - name: OTEL_INSTRUMENTATION_TOMCAT_EXCLUDED_PATHS
+            value: "/actuator/health"
           - name: OTEL_INSTRUMENTATION_SERVER_EXCLUDE_PATHS
             value: "/actuator/health"
           - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
