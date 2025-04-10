@@ -79,12 +79,12 @@ spec:
             value: "false"
           - name: MANAGEMENT_HEALTH_RABBIT_ENABLED
             value: "false"
-          - name: OTEL_INSTRUMENTATION_SPRING_CORE_ENABLED
-            value: "false"
-          - name: OTEL_INSTRUMENTATION_TOMCAT_ENABLED
-            value: "false"
-          - name: OTEL_INSTRUMENTATION_SPRING_WEBMVC_ENABLED
-            value: "false"
+          # - name: OTEL_INSTRUMENTATION_SPRING_CORE_ENABLED
+          #   value: "false"
+          # - name: OTEL_INSTRUMENTATION_TOMCAT_ENABLED
+          #   value: "false"
+          # - name: OTEL_INSTRUMENTATION_SPRING_WEBMVC_ENABLED
+          #   value: "false"
           - name: OTEL_TRACES_SAMPLER
             value: "parentbased_always_on"
           - name: OTEL_INSTRUMENTATION_HTTP_URL_FILTER_ENABLED
