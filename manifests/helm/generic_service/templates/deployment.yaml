@@ -71,16 +71,6 @@ spec:
             value: "{{ with $svc.restTemplate }}{{ .readTimeout }}{{ else }}{{ $root.Values.global.restTemplate.readTimeout }}{{ end }}"
           - name: LOGGING_LEVEL_ROOT
             value: "{{ with $svc.logging }}{{ .root }}{{ else }}{{ $root.Values.global.logging.root }}{{ end }}"
-          - name: OTEL_INSTRUMENTATION_SPRING_WEB_EXCLUDE_PATHS
-            value: "/actuator/health"
-          - name: OTEL_INSTRUMENTATION_TOMCAT_EXCLUDE_PATHS
-            value: "/actuator/health"
-          - name: OTEL_INSTRUMENTATION_SPRING_WEBMVC_EXCLUDED_PATHS
-            value: "/actuator/health"
-          - name: OTEL_INSTRUMENTATION_TOMCAT_EXCLUDED_PATHS
-            value: "/actuator/health"
-          - name: OTEL_INSTRUMENTATION_SERVER_EXCLUDE_PATHS
-            value: "/actuator/health"
           - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
             value: "health"
           - name: MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS
@@ -89,15 +79,17 @@ spec:
             value: "false"
           - name: MANAGEMENT_HEALTH_RABBIT_ENABLED
             value: "false"
+          - name: OTEL_INSTRUMENTATION_SPRING_CORE_ENABLED
+            value: "false"
+          - name: OTEL_INSTRUMENTATION_TOMCAT_ENABLED
+            value: "false"
+          - name: OTEL_INSTRUMENTATION_SPRING_WEBMVC_ENABLED
+            value: "false"
           - name: OTEL_TRACES_SAMPLER
-            value: "parentbased_traceidratio"
-          - name: OTEL_TRACES_SAMPLER_ARG
-            value: "1.0;url.path!=/actuator/health"
+            value: "parentbased_always_on"
           - name: OTEL_INSTRUMENTATION_HTTP_URL_FILTER_ENABLED
             value: "true"
           - name: OTEL_INSTRUMENTATION_HTTP_URL_FILTER_EXCLUDELIST
-            value: "/actuator/health"
-          - name: OTEL_INSTRUMENTATION_SPRING_WEBMVC_EXCLUDE_URLS
             value: "/actuator/health"
       {{- with $root.Values.global.monitoring}}
       {{- if eq $svc.lang "python"}} # python auto instrument
