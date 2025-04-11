@@ -92,6 +92,20 @@ def make_reservation(base_url, user):
     
     url = f"{base_url}/api/v1/preserveservice/preserve"
     
+    # Print request details
+    print("\n=== REQUEST DETAILS ===")
+    print(f"URL: {url}")
+    print("Headers:")
+    for key, value in headers.items():
+        # Mask the token for security
+        if key == "Authorization":
+            print(f"  {key}: Bearer [REDACTED]")
+        else:
+            print(f"  {key}: {value}")
+    print("Data:")
+    print(json.dumps(data, indent=2))
+    print("=====================\n")
+    
     try:
         response = requests.post(url, json=data, headers=headers)
         print(f"Status Code: {response.status_code}")
