@@ -159,10 +159,10 @@ class ReservationUser(FastHttpUser):
         return random.choice(trip_ids)
 
     def random_date(self) -> str:
-        """Generate a random date between 2025-01-01 and 2035-12-31 with more spread"""
+        """Generate a random date between 2026-01-01 and 2100-12-31 with more spread"""
         # Extended date range to 10 years
         start_date = datetime(2026, 1, 1)
-        end_date = datetime(2035, 12, 31)
+        end_date = datetime(2100, 12, 31)
         time_between_dates = end_date - start_date
         days_between_dates = time_between_dates.days
         random_number_of_days = random.randrange(days_between_dates)
