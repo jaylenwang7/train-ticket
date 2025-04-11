@@ -48,12 +48,17 @@ def load_credentials(filename="user_credentials.json"):
 def random_date():
     """Generate a random date between 2025-01-01 and 2030-12-31"""
     start_date = datetime(2025, 1, 1)
-    end_date = datetime(2030, 12, 31)
+    end_date = datetime(2035, 12, 31)
     time_between_dates = end_date - start_date
     days_between_dates = time_between_dates.days
     random_number_of_days = random.randrange(days_between_dates)
     random_date = start_date + timedelta(days=random_number_of_days)
     return random_date.strftime("%Y-%m-%d")
+
+def random_trip_id():
+    """Return a random trip ID from the available options"""
+    trip_ids = ["G1234", "G1235", "G1236", "G1237", "D1345"]
+    return random.choice(trip_ids)
 
 def make_reservation(base_url, user):
     """Make a single reservation request"""
@@ -69,10 +74,13 @@ def make_reservation(base_url, user):
         "Authorization": f"Bearer {user.token}"
     }
     
+    # Use random trip ID instead of fixed one
+    trip_id = random_trip_id()
+    
     data = {
         "accountId": user.user_id,
         "contactsId": contact_id,
-        "tripId": "D1345",
+        "tripId": trip_id,
         "seatType": "3",
         "date": random_date(),
         "from": "shanghai",

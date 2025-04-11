@@ -143,10 +143,16 @@ class ReservationUser(FastHttpUser):
         super().__init__(*args, **kwargs)
         self.users = load_credentials()
         
+    def random_trip_id(self) -> str:
+        """Return a random trip ID from the available options"""
+        trip_ids = ["G1234", "G1235", "G1236", "G1237", "D1345"]
+        return random.choice(trip_ids)
+
     def random_date(self) -> str:
-        """Generate a random date between 2025-01-01 and 2030-12-31"""
+        """Generate a random date between 2025-01-01 and 2035-12-31 with more spread"""
+        # Extended date range to 10 years
         start_date = datetime(2025, 1, 1)
-        end_date = datetime(2030, 12, 31)
+        end_date = datetime(2035, 12, 31)
         time_between_dates = end_date - start_date
         days_between_dates = time_between_dates.days
         random_number_of_days = random.randrange(days_between_dates)
@@ -168,10 +174,13 @@ class ReservationUser(FastHttpUser):
             "Authorization": f"Bearer {user.token}"
         }
         
+        # Use random trip ID instead of fixed one
+        trip_id = self.random_trip_id()
+        
         data = {
             "accountId": user.user_id,
             "contactsId": contact_id,
-            "tripId": "D1345",
+            "tripId": trip_id,
             "seatType": "3",
             "date": self.random_date(),
             "from": "shanghai",
