@@ -60,6 +60,43 @@ def random_trip_id():
     trip_ids = ["G1234", "G1235", "G1236", "G1237", "D1345"]
     return random.choice(trip_ids)
 
+# Define route configurations for each trip ID
+# Format: trip_id: (route_id, [station1, station2, ...])
+ROUTE_CONFIGS = {
+    "G1234": ("92708982-77af-4318-be25-57ccb0ff69ad", ["nanjing", "zhenjiang", "wuxi", "suzhou", "shanghai"]),
+    "G1235": ("aefcef3f-3f42-46e8-afd7-6cb2a928bd3d", ["nanjing", "shanghai"]),
+    "G1236": ("a3f256c1-0e43-4f7d-9c21-121bf258101f", ["nanjing", "suzhou", "shanghai"]),
+    "G1237": ("084837bb-53c8-4438-87c8-0321a4d09917", ["suzhou", "shanghai"]),
+    "D1345": ("f3d4d4ef-693b-4456-8eed-59c0d717dd08", ["shanghai", "suzhou"])
+}
+
+def get_valid_stations(trip_id):
+    """
+    Get valid start and end stations for a given trip ID based on the route configuration.
+    
+    Args:
+        trip_id (str): The trip ID
+        
+    Returns:
+        tuple: (start_station, end_station)
+    """
+    if trip_id not in ROUTE_CONFIGS:
+        # Default to shanghai and suzhou if trip_id is not found
+        return "shanghai", "suzhou"
+        
+    _, stations = ROUTE_CONFIGS[trip_id]
+    
+    # If there are only two stations, use them directly
+    if len(stations) == 2:
+        return stations[0], stations[1]
+        
+    # For routes with more than two stations, randomly select a start station
+    # and ensure the end station comes after it in the route
+    start_idx = random.randint(0, len(stations) - 2)
+    end_idx = random.randint(start_idx + 1, len(stations) - 1)
+    
+    return stations[start_idx], stations[end_idx]
+
 def make_reservation(base_url, user):
     """Make a single reservation request"""
     if not user.contact_ids:
@@ -77,14 +114,17 @@ def make_reservation(base_url, user):
     # Use random trip ID instead of fixed one
     trip_id = random_trip_id()
     
+    # Get valid start and end stations based on the trip ID
+    from_station, to_station = get_valid_stations(trip_id)
+    
     data = {
         "accountId": user.user_id,
         "contactsId": contact_id,
         "tripId": trip_id,
         "seatType": "3",
         "date": random_date(),
-        "from": "shanghai",
-        "to": "suzhou",
+        "from": from_station,
+        "to": to_station,
         "assurance": "1",
         "foodType": 1,
         "foodName": "Rice",
