@@ -47,7 +47,7 @@ def load_credentials(filename="user_credentials.json"):
 
 def random_date():
     """Generate a random date between 2025-01-01 and 2030-12-31"""
-    start_date = datetime(2025, 1, 1)
+    start_date = datetime(2026, 1, 1)
     end_date = datetime(2035, 12, 31)
     time_between_dates = end_date - start_date
     days_between_dates = time_between_dates.days

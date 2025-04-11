@@ -161,7 +161,7 @@ class ReservationUser(FastHttpUser):
     def random_date(self) -> str:
         """Generate a random date between 2025-01-01 and 2035-12-31 with more spread"""
         # Extended date range to 10 years
-        start_date = datetime(2025, 1, 1)
+        start_date = datetime(2026, 1, 1)
         end_date = datetime(2035, 12, 31)
         time_between_dates = end_date - start_date
         days_between_dates = time_between_dates.days
