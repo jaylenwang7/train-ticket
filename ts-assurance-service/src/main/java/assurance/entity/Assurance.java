@@ -14,6 +14,7 @@ import java.util.UUID;
 @Data
 @Entity
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Table(indexes = {@Index(name = "assurance_order_id_idx", columnList = "orderId")})
 public class Assurance {
 
     @Id
