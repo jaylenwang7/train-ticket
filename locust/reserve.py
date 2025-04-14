@@ -259,6 +259,7 @@ class CustomShape(LoadTestShape):
 
     def tick(self):
         run_time = int(self.get_run_time())
+        print(f"Run time: {run_time}")
         if run_time < self.time_limit:
             user_count = RPS[run_time]
             return (user_count, self.spawn_rate)
