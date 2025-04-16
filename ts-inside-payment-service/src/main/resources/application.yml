@@ -18,5 +18,6 @@ spring:
         dialect: org.hibernate.dialect.MySQL5Dialect
 
 
+
 swagger:
   controllerPackage: inside_payment.controller

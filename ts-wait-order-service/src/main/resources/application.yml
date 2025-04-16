@@ -17,5 +17,6 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQL5Dialect
 
+
 swagger:
   controllerPackage: waitorder.controller

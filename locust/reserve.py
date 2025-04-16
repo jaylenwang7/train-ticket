@@ -122,6 +122,16 @@ if seed is None:
     seed = time.time()
 random.seed(seed)
 
+# Define route configurations for each trip ID
+# Format: trip_id: (route_id, [station1, station2, ...])
+ROUTE_CONFIGS = {
+    "G1234": ("92708982-77af-4318-be25-57ccb0ff69ad", ["nanjing", "zhenjiang", "wuxi", "suzhou", "shanghai"]),
+    "G1235": ("aefcef3f-3f42-46e8-afd7-6cb2a928bd3d", ["nanjing", "shanghai"]),
+    "G1236": ("a3f256c1-0e43-4f7d-9c21-121bf258101f", ["nanjing", "suzhou", "shanghai"]),
+    "G1237": ("084837bb-53c8-4438-87c8-0321a4d09917", ["suzhou", "shanghai"]),
+    "D1345": ("f3d4d4ef-693b-4456-8eed-59c0d717dd08", ["shanghai", "suzhou"])
+}
+
 def constant_pacing(wait_time):
     """
     Returns a function that ensures tasks run at a constant rate regardless of task execution time.
@@ -143,15 +153,48 @@ class ReservationUser(FastHttpUser):
         super().__init__(*args, **kwargs)
         self.users = load_credentials()
         
+    def random_trip_id(self) -> str:
+        """Return a random trip ID from the available options"""
+        trip_ids = ["G1234", "G1235", "G1236", "G1237", "D1345"]
+        return random.choice(trip_ids)
+
     def random_date(self) -> str:
-        """Generate a random date between 2025-01-01 and 2030-12-31"""
-        start_date = datetime(2025, 1, 1)
-        end_date = datetime(2030, 12, 31)
+        """Generate a random date between 2026-01-01 and 2100-12-31 with more spread"""
+        # Extended date range to 10 years
+        start_date = datetime(2026, 1, 1)
+        end_date = datetime(2100, 12, 31)
         time_between_dates = end_date - start_date
         days_between_dates = time_between_dates.days
         random_number_of_days = random.randrange(days_between_dates)
         random_date = start_date + timedelta(days=random_number_of_days)
         return random_date.strftime("%Y-%m-%d")
+    
+    def get_valid_stations(self, trip_id: str) -> tuple:
+        """
+        Get valid start and end stations for a given trip ID based on the route configuration.
+        
+        Args:
+            trip_id (str): The trip ID
+            
+        Returns:
+            tuple: (start_station, end_station)
+        """
+        if trip_id not in ROUTE_CONFIGS:
+            # Default to shanghai and suzhou if trip_id is not found
+            return "shanghai", "suzhou"
+            
+        _, stations = ROUTE_CONFIGS[trip_id]
+        
+        # If there are only two stations, use them directly
+        if len(stations) == 2:
+            return stations[0], stations[1]
+            
+        # For routes with more than two stations, randomly select a start station
+        # and ensure the end station comes after it in the route
+        start_idx = random.randint(0, len(stations) - 2)
+        end_idx = random.randint(start_idx + 1, len(stations) - 1)
+        
+        return stations[start_idx], stations[end_idx]
 
     @task
     @tag('reserve_ticket')
@@ -168,14 +211,20 @@ class ReservationUser(FastHttpUser):
             "Authorization": f"Bearer {user.token}"
         }
         
+        # Use random trip ID instead of fixed one
+        trip_id = self.random_trip_id()
+        
+        # Get valid start and end stations based on the trip ID
+        from_station, to_station = self.get_valid_stations(trip_id)
+        
         data = {
             "accountId": user.user_id,
             "contactsId": contact_id,
-            "tripId": "D1345",
+            "tripId": trip_id,
             "seatType": "3",
             "date": self.random_date(),
-            "from": "shanghai",
-            "to": "suzhou",
+            "from": from_station,
+            "to": to_station,
             "assurance": "1",
             "foodType": 1,
             "foodName": "Rice",
@@ -210,6 +259,7 @@ class CustomShape(LoadTestShape):
 
     def tick(self):
         run_time = int(self.get_run_time())
+        logging.info(f"Run time: {run_time}")
         if run_time < self.time_limit:
             user_count = RPS[run_time]
             return (user_count, self.spawn_rate)

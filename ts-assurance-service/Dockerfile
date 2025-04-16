@@ -15,7 +15,7 @@ COPY ./target/*.jar app.jar
 EXPOSE 8080
 
 # Set default environment variables for OpenTelemetry
-ENV OTEL_RESOURCE_ATTRIBUTES="service.name=ts-admin-user-service"
+ENV OTEL_RESOURCE_ATTRIBUTES="service.name=ts-assurance-service"
 ENV OTEL_EXPORTER_OTLP_ENDPOINT="http://opentelemetry-collector-deployment:4317"
 ENV OTEL_EXPORTER_OTLP_PROTOCOL="grpc"
 ENV OTEL_METRICS_EXPORTER="otlp"

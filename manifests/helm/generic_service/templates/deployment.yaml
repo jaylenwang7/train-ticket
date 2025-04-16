@@ -15,6 +15,16 @@ spec:
       labels:
         app: {{ $svc.name }}
     spec:
+      {{- if eq $svc.name "ts-ui-dashboard" }}
+      volumes:
+      - name: nginx-conf
+        configMap:
+          name: nginx-conf
+      - name: opentelemetry-module-conf
+        configMap:
+          name: opentelemetry-module-conf
+      {{- end }}
+      terminationGracePeriodSeconds: 30
       containers:
       - name: {{ $svc.name }}
         image: "{{ $root.Values.global.dockerRegistry }}{{ if $root.Values.global.dockerRegistry }}/{{ end }}{{ $root.Values.global.repository }}/{{ $svc.name }}:{{ $root.Values.global.defaultImageVersion }}"
@@ -25,29 +35,74 @@ spec:
             name: {{ $svc.secretRef | quote}}
         {{- if ne $svc.name "ts-ticket-office-service" }}
         readinessProbe:
-          tcpSocket:
+          {{- if $svc.readinessProbe }}
+          {{- toYaml $svc.readinessProbe | nindent 10 }}
+          {{- else }}
+          httpGet:
+            path: /actuator/health
             port: 8080
           initialDelaySeconds: 5
           periodSeconds: 1
           failureThreshold: 30
           timeoutSeconds: 2
+          {{- end }}
         {{- end }}
+        lifecycle:
+          preStop:
+            exec:
+              command: ["sh", "-c", "sleep 10"]
+        {{- if eq $svc.name "ts-ui-dashboard" }}
+        volumeMounts:
+        - name: nginx-conf
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+        - name: opentelemetry-module-conf
+          mountPath: /etc/nginx/conf.d/opentelemetry_module.conf
+          subPath: opentelemetry_module.conf
+        {{- end }}
+        env:
+          - name: SPRINGFOX_DOCUMENTATION_ENABLED
+            value: "false"
+          - name: JAVA_TOOL_OPTIONS
+            value: "-XX:+TieredCompilation -XX:TieredStopAtLevel=1 -Djava.security.egd=file:/dev/./urandom -XX:+AlwaysPreTouch -Xverify:none"
+          - name: SPRING_REST_TEMPLATE_CONNECTION_TIMEOUT
+            value: "{{ with $svc.restTemplate }}{{ .connectionTimeout }}{{ else }}{{ $root.Values.global.restTemplate.connectionTimeout }}{{ end }}"
+          - name: SPRING_REST_TEMPLATE_READ_TIMEOUT
+            value: "{{ with $svc.restTemplate }}{{ .readTimeout }}{{ else }}{{ $root.Values.global.restTemplate.readTimeout }}{{ end }}"
+          - name: LOGGING_LEVEL_ROOT
+            value: "{{ with $svc.logging }}{{ .root }}{{ else }}{{ $root.Values.global.logging.root }}{{ end }}"
+          - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
+            value: "health"
+          - name: MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS
+            value: "always"
+          - name: SPRING_SECURITY_MANAGEMENT_ENDPOINTS_WEB_SECURITY_ENABLED
+            value: "false"
+          - name: MANAGEMENT_HEALTH_RABBIT_ENABLED
+            value: "false"
+          # - name: OTEL_INSTRUMENTATION_SPRING_CORE_ENABLED
+          #   value: "false"
+          # - name: OTEL_INSTRUMENTATION_TOMCAT_ENABLED
+          #   value: "false"
+          # - name: OTEL_INSTRUMENTATION_SPRING_WEBMVC_ENABLED
+          #   value: "false"
       {{- with $root.Values.global.monitoring}}
       {{- if eq $svc.lang "python"}} # python auto instrument
-        env:
           - name: OTEL_TRACES_EXPORTER
             value: console,otlp
           - name: OTEL_METRICS_EXPORTER
-            value: console,otlp
+            value: none
+          - name: OTEL_LOGS_EXPORTER
+            value: none
           - name: OTEL_EXPORTER_OTLP_ENDPOINT
             value: opentelemetry-collector-deployment:4317
       {{- end}}
       {{- if eq $svc.lang "javascript"}}
-        env:
           - name: OTEL_TRACES_EXPORTER
             value: console,otlp
           - name: OTEL_METRICS_EXPORTER
-            value: console,otlp
+            value: none
+          - name: OTEL_LOGS_EXPORTER
+            value: none
           - name: OTEL_EXPORTER_OTLP_ENDPOINT
             value: opentelemetry-collector-deployment:4317
           - name: OTEL_NODE_RESOURCE_DETECTORS
@@ -57,7 +112,6 @@ spec:
       {{- end}}
       {{- if not $svc.lang}} #if no language is set, default to java
       {{- if eq $root.Values.global.monitoring "skywalking"}}
-        env:
           - name: NODE_IP
             valueFrom:
               fieldRef:
@@ -74,7 +128,6 @@ spec:
                 fieldPath: metadata.labels['app']
       {{- end}}
       {{- if eq $root.Values.global.monitoring "opentelemetry"}}
-        env:
           - name: NODE_IP
             valueFrom:
               fieldRef:
@@ -84,7 +137,7 @@ spec:
           - name: OTEL_EXPORTER_OTLP_ENDPOINT
             value: "http://opentelemetry-collector-deployment:4317"
           - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
-            value: "http://opentelemetry-collector-deployment:4317"
+            value: "http://opentelemetry-collector-deployment:4317" 
           - name: OTEL_EXPORTER_OTLP_METRICS_ENDPOINT
             value: "http://opentelemetry-collector-deployment:4317"
           - name: OTEL_EXPORTER_OTLP_LOGS_ENDPOINT
@@ -92,11 +145,11 @@ spec:
           - name: OTEL_EXPORTER_OTLP_PROTOCOL
             value: grpc
           - name: OTEL_METRICS_EXPORTER
-            value: otlp
+            value: none
           - name: OTEL_TRACES_EXPORTER
             value: otlp
           - name: OTEL_LOGS_EXPORTER
-            value: otlp
+            value: none
       {{- end}} 
       {{- end}}
       {{- end}}

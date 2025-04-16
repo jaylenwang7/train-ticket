@@ -83,8 +83,10 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Response create(Order order, HttpHeaders headers) {
         OrderServiceImpl.LOGGER.info("[create][Create Order][Ready to Create Order]");
-        ArrayList<Order> accountOrders = orderRepository.findByAccountId(order.getAccountId());
-        if (accountOrders.contains(order)) {
+        
+        // Check if an order with the same ID already exists
+        Optional<Order> existingOrder = orderRepository.findById(order.getId());
+        if (existingOrder.isPresent()) {
             OrderServiceImpl.LOGGER.error("[create][Order Create Fail][Order already exists][OrderId: {}]", order.getId());
             return new Response<>(0, "Order already exist", null);
         } else {
@@ -121,68 +123,29 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Response<ArrayList<Order>> queryOrders(OrderInfo qi, String accountId, HttpHeaders headers) {
-        //1.Get all orders of the user
-        ArrayList<Order> list = orderRepository.findByAccountId(accountId);
-        OrderServiceImpl.LOGGER.info("[queryOrders][Step 1][Get Orders Number of Account][size: {}]", list.size());
-        //2.Check is these orders fit the requirement/
+        // Use database-level filtering instead of in-memory filtering
+        ArrayList<Order> list;
+        
         if (qi.isEnableStateQuery() || qi.isEnableBoughtDateQuery() || qi.isEnableTravelDateQuery()) {
-            ArrayList<Order> finalList = new ArrayList<>();
-            for (Order tempOrder : list) {
-                boolean statePassFlag = false;
-                boolean boughtDatePassFlag = false;
-                boolean travelDatePassFlag = false;
-                //3.Check order state requirement.
-                if (qi.isEnableStateQuery()) {
-                    if (tempOrder.getStatus() != qi.getState()) {
-                        statePassFlag = false;
-                    } else {
-                        statePassFlag = true;
-                    }
-                } else {
-                    statePassFlag = true;
-                }
-                OrderServiceImpl.LOGGER.info("[queryOrders][Step 2][Check Status Fits End]");
-                //4.Check order travel date requirement.
-                Date boughtDate = StringUtils.String2Date(tempOrder.getBoughtDate());
-                Date travelDate = StringUtils.String2Date(tempOrder.getTravelDate());
-                Date travelDateEnd = StringUtils.String2Date(qi.getTravelDateEnd());
-                Date boughtDateStart = StringUtils.String2Date(qi.getBoughtDateStart());
-                Date boughtDateEnd = StringUtils.String2Date(qi.getBoughtDateEnd());
-                if (qi.isEnableTravelDateQuery()) {
-                    if (travelDate.before(travelDateEnd) &&
-                            travelDate.after(boughtDateStart)) {
-                        travelDatePassFlag = true;
-                    } else {
-                        travelDatePassFlag = false;
-                    }
-                } else {
-                    travelDatePassFlag = true;
-                }
-                OrderServiceImpl.LOGGER.info("[queryOrders][Step 2][Check Travel Date End]");
-                //5.Check order bought date requirement.
-                if (qi.isEnableBoughtDateQuery()) {
-                    if (boughtDate.before(boughtDateEnd) &&
-                            boughtDate.after(boughtDateStart)) {
-                        boughtDatePassFlag = true;
-                    } else {
-                        boughtDatePassFlag = false;
-                    }
-                } else {
-                    boughtDatePassFlag = true;
-                }
-                OrderServiceImpl.LOGGER.info("[queryOrders][Step 2][Check Bought Date End]");
-                //6.check if all requirement fits.
-                if (statePassFlag && boughtDatePassFlag && travelDatePassFlag) {
-                    finalList.add(tempOrder);
-                }
-                OrderServiceImpl.LOGGER.info("[queryOrders][Step 2][Check All Requirement End]");
-            }
-            OrderServiceImpl.LOGGER.info("[queryOrders][Get order num][size:{}]", finalList.size());
-            return new Response<>(1, "Get order num", finalList);
+            // Use the new repository method with filters
+            list = orderRepository.findByAccountIdWithFilters(
+                    accountId,
+                    qi.isEnableStateQuery(),
+                    qi.getState(),
+                    qi.isEnableBoughtDateQuery(),
+                    qi.getBoughtDateStart(),
+                    qi.getBoughtDateEnd(),
+                    qi.isEnableTravelDateQuery(),
+                    qi.getTravelDateStart(),
+                    qi.getTravelDateEnd()
+            );
         } else {
-            OrderServiceImpl.LOGGER.warn("[queryOrders][Orders don't fit the requirement][loginId: {}]", qi.getLoginId());
-            return new Response<>(1, "Get order num", list);
+            // If no filters are enabled, just get all orders for the account
+            list = orderRepository.findByAccountId(accountId);
         }
+        
+        OrderServiceImpl.LOGGER.info("[queryOrders][Get order num][size:{}]", list.size());
+        return new Response<>(1, "Get order num", list);
     }
 
     @Override
@@ -379,24 +342,25 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Response checkSecurityAboutOrder(Date dateFrom, String accountId, HttpHeaders headers) {
         OrderSecurity result = new OrderSecurity();
-        ArrayList<Order> orders = orderRepository.findByAccountId(accountId);
-        int countOrderInOneHour = 0;
-        int countTotalValidOrder = 0;
+        
+        // Calculate the date one hour ago
         Calendar ca = Calendar.getInstance();
         ca.setTime(dateFrom);
         ca.add(Calendar.HOUR_OF_DAY, -1);
-        dateFrom = ca.getTime();
-        for (Order order : orders) {
-            if (order.getStatus() == OrderStatus.NOTPAID.getCode() ||
-                    order.getStatus() == OrderStatus.PAID.getCode() ||
-                    order.getStatus() == OrderStatus.COLLECTED.getCode()) {
-                countTotalValidOrder += 1;
-            }
-            Date boughtDate = StringUtils.String2Date(order.getBoughtDate());
-            if (boughtDate.after(dateFrom)) {
-                countOrderInOneHour += 1;
-            }
-        }
+        Date oneHourAgo = ca.getTime();
+        String oneHourAgoStr = StringUtils.Date2String(oneHourAgo);
+        
+        // Count orders in the last hour using the new repository method
+        int countOrderInOneHour = orderRepository.countOrdersInLastHour(accountId, oneHourAgoStr);
+        
+        // Count valid orders using the new repository method
+        List<Integer> validStatuses = Arrays.asList(
+                OrderStatus.NOTPAID.getCode(),
+                OrderStatus.PAID.getCode(),
+                OrderStatus.COLLECTED.getCode()
+        );
+        int countTotalValidOrder = orderRepository.countValidOrders(accountId, validStatuses);
+        
         result.setOrderNumInLastOneHour(countOrderInOneHour);
         result.setOrderNumOfValidOrder(countTotalValidOrder);
         return new Response<>(1, "Check Security Success . ", result);
@@ -421,8 +385,10 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Response addNewOrder(Order order, HttpHeaders headers) {
         OrderServiceImpl.LOGGER.info("[addNewOrder][Admin Add Order][Ready to Add Order]");
-        ArrayList<Order> accountOrders = orderRepository.findByAccountId(order.getAccountId());
-        if (accountOrders.contains(order)) {
+        
+        // Check if an order with the same ID already exists
+        Optional<Order> existingOrder = orderRepository.findById(order.getId());
+        if (existingOrder.isPresent()) {
             OrderServiceImpl.LOGGER.error("[addNewOrder][Admin Add Order Fail][Order already exists][OrderId: {}]",order.getId());
             return new Response<>(0, "Order already exist", null);
         } else {
