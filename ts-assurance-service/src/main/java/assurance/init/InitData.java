@@ -10,6 +10,9 @@ import edu.fudan.common.util.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -25,9 +28,20 @@ public class InitData implements CommandLineRunner {
     @Autowired
     AssuranceRepository repository;
 
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(InitData.class);
+
     @Override
     public void run(String... args) throws Exception {
-        //do nothing
+        // Warm up the connection pool by executing a simple query
+        try {
+            jdbcTemplate.queryForObject("SELECT 1", Integer.class);
+            LOGGER.info("[InitData] Database connection pool warmed up successfully.");
+        } catch (Exception e) {
+            LOGGER.error("[InitData] Failed to warm up database connection pool.", e);
+        }
 
        /* Assurance assurance1=new Assurance();
         String id="ff8080817b3e4c27017b3e4c3bee0000";

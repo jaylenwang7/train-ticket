@@ -79,6 +79,11 @@ spec:
             value: "false"
           - name: MANAGEMENT_HEALTH_RABBIT_ENABLED
             value: "false"
+          # Add HikariCP pool size variables for Java services
+          - name: SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE
+            value: "{{ $root.Values.global.hikari.maximumPoolSize }}"
+          - name: SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE
+            value: "{{ $root.Values.global.hikari.minimumIdle }}"
           # - name: OTEL_INSTRUMENTATION_SPRING_CORE_ENABLED
           #   value: "false"
           # - name: OTEL_INSTRUMENTATION_TOMCAT_ENABLED

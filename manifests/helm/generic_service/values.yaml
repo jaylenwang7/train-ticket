@@ -19,6 +19,10 @@ global:
   logging:
     root: WARN
 
+  hikari:
+    maximumPoolSize: 10
+    minimumIdle: 10
+
 skywalking:
   enabled: false
   image: apache/skywalking-java-agent:8.8.0-alpine

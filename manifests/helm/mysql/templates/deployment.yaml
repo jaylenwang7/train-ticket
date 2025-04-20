@@ -16,7 +16,9 @@ metadata:
 data:
   my.cnf: |
     [mysqld]
-    max_connections = 1024
+    max_connections = 2048
+    wait_timeout = 600
+    interactive_timeout = 600
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -51,6 +53,13 @@ spec:
           value: "yourpassword"
         ports:
         - containerPort: 3306
+        resources:
+          requests:
+            cpu: "16"
+            memory: "32Gi"
+          limits:
+            cpu: "16"
+            memory: "32Gi"
         volumeMounts:
         # - name: mysql-persistent-storage
         #   mountPath: /var/lib/mysql
